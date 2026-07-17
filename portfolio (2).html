@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motion Under Vault — Muvi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Work+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#9E1B1B;
+    --surface:#8C1717;
+    --surface-2:#791212;
+    --paper:#F5EFE3;
+    --paper-dim:#E3C3BA;
+    --brass:#F5C518;
+    --brass-dim:#B08E12;
+    --teal:#0A0A0A;
+    --line:rgba(10,10,10,0.22);
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Work Sans', sans-serif;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .stamp{
+    font-family:'Big Shoulders Display', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.02em;
+  }
+  .mono{ font-family:'IBM Plex Mono', monospace; letter-spacing:0.04em; }
+  a{ color:inherit; }
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 32px; }
+
+  /* ---------- NAV ---------- */
+  nav{
+    position:fixed; top:0; left:0; right:0; z-index:50;
+    display:flex; justify-content:space-between; align-items:center;
+    padding:20px 32px;
+    mix-blend-mode:difference;
+  }
+  nav .brand{ font-weight:700; font-size:18px; }
+  nav ul{ list-style:none; display:flex; gap:28px; }
+  nav a{ text-decoration:none; font-size:13px; letter-spacing:0.08em; text-transform:uppercase; }
+
+  /* ---------- HERO ---------- */
+  header{
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    position:relative;
+    padding:120px 32px 80px;
+    background:
+      repeating-linear-gradient(180deg, rgba(10,10,10,0.05) 0px, rgba(10,10,10,0.05) 1px, transparent 1px, transparent 3px);
+  }
+  header::before{
+    content:"";
+    position:absolute; top:0; right:0; bottom:0;
+    width:45%;
+    background:
+      radial-gradient(circle at 70% 40%, rgba(245,197,24,0.14), transparent 60%);
+    pointer-events:none;
+    z-index:1;
+  }
+  .hero-bg{
+    position:absolute; inset:0; z-index:0;
+    overflow:hidden;
+    background:var(--surface);
+  }
+  .hero-bg img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .hero-bg::after{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(180deg, rgba(10,10,10,0.55) 0%, rgba(10,10,10,0.35) 40%, var(--ink) 96%);
+  }
+  .hero-bg .placeholder{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    z-index:1;
+  }
+  .hero-bg .placeholder .mono{ font-size:12px; color:var(--paper-dim); }
+  .hero-bg .placeholder strong{
+    display:block; margin-top:10px; font-family:'Big Shoulders Display';
+    font-size:20px; letter-spacing:0.04em; color:var(--brass); text-transform:uppercase;
+  }
+  .hero-content{ position:relative; z-index:2; }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:10px;
+    font-size:12px; color:var(--brass); margin-bottom:28px;
+  }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:var(--brass); }
+  h1.title{
+    font-size:clamp(52px, 9vw, 118px);
+    font-weight:800;
+    line-height:0.92;
+    max-width:900px;
+  }
+  h1.title span{ color:var(--brass); }
+  .tagline{
+    margin-top:28px; max-width:480px;
+    color:var(--paper-dim); font-size:16px;
+  }
+  .hero-meta{
+    margin-top:56px; display:flex; gap:48px; flex-wrap:wrap;
+  }
+  .hero-meta div{ font-size:13px; color:var(--paper-dim); }
+  .hero-meta strong{ display:block; color:var(--paper); font-family:'Big Shoulders Display'; font-size:22px; font-weight:700; text-transform:uppercase; }
+
+  /* ---------- SECTION LABEL ---------- */
+  .section-label{
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:48px;
+  }
+  .section-label .num{ color:var(--brass); font-size:13px; }
+  .section-label h2{ font-size:32px; font-weight:700; }
+  .section-label .rule{ flex:1; height:1px; background:var(--line); }
+
+  section{ padding:110px 0; border-top:1px solid var(--line); }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{
+    display:grid; grid-template-columns:1.2fr 1fr; gap:64px;
+  }
+  .about-grid p{ color:var(--paper-dim); font-size:16px; max-width:52ch; }
+  .about-grid p + p{ margin-top:16px; }
+  .tags{ display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+  .tag{
+    font-size:12px; padding:7px 14px;
+    border:1px solid var(--line); border-radius:2px;
+    color:var(--paper-dim);
+  }
+  .tag.on{ border-color:var(--brass-dim); color:var(--brass); }
+
+  /* ---------- WORK GRID ---------- */
+  .grid{
+    display:grid; grid-template-columns:repeat(2, 1fr); gap:2px;
+    background:var(--line);
+  }
+  .reel{
+    background:var(--surface); padding:32px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    min-height:280px;
+    position:relative; overflow:hidden;
+    text-decoration:none;
+    transition:background 0.25s ease;
+  }
+  .reel:hover{ background:var(--surface-2); }
+  .reel .frame{
+    position:absolute; top:20px; right:20px;
+    width:64px; height:64px; border-radius:50%;
+    border:1.5px dashed var(--line);
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color 0.25s ease, transform 0.4s ease;
+  }
+  .reel:hover .frame{ border-color:var(--brass); transform:rotate(35deg); }
+  .reel .frame::after{
+    content:""; width:8px; height:8px; border-radius:50%; background:var(--line);
+  }
+  .reel:hover .frame::after{ background:var(--teal); }
+  .reel .tagnum{ font-size:12px; color:var(--brass); margin-bottom:14px; }
+  .reel h3{ font-size:26px; font-weight:700; max-width:75%; }
+  .reel .desc{ margin-top:14px; font-size:14px; color:var(--paper-dim); max-width:80%; }
+  .reel .meta{ margin-top:24px; font-size:12px; color:var(--paper-dim); display:flex; gap:14px; }
+
+  /* ---------- CONTACT ---------- */
+  .contact-inner{
+    display:flex; flex-direction:column; align-items:flex-start; gap:28px;
+  }
+  .contact-inner h2{
+    font-size:clamp(36px, 6vw, 64px); font-weight:800; max-width:14ch;
+  }
+  .contact-links{ display:flex; flex-wrap:wrap; gap:14px; margin-top:8px; }
+  .contact-links a{
+    text-decoration:none; font-size:13px; letter-spacing:0.06em; text-transform:uppercase;
+    border:1px solid var(--line); padding:12px 20px; border-radius:2px;
+    display:inline-flex; align-items:center; gap:8px;
+    transition:border-color 0.2s ease, color 0.2s ease;
+  }
+  .contact-links a:hover{ border-color:var(--brass); color:var(--brass); }
+
+  footer{
+    padding:28px 32px; display:flex; justify-content:space-between;
+    font-size:11px; color:var(--paper-dim); border-top:1px solid var(--line);
+  }
+
+  @media (max-width:720px){
+    .about-grid, .grid{ grid-template-columns:1fr; }
+    nav ul{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">MOTION UNDER VAULT</div>
+  <ul>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<header>
+  <div class="hero-bg">
+    <!-- Replace this whole placeholder div's content with: <img src="your-image.jpg" alt="Featured work"> -->
+    <div class="placeholder">
+      <div class="mono">1920 × 1080 RECOMMENDED</div>
+      <strong>Drop your background image here</strong>
+    </div>
+  </div>
+  <div class="wrap hero-content" style="padding:0;">
+    <div class="eyebrow mono">MALANG, INDONESIA — ILLUSTRATION &amp; MOTION</div>
+    <h1 class="title">MUVI<br><span>ARCHIVES</span></h1>
+    <p class="tagline">I'm Muvi — an illustrator and motion graphics artist. This is a running archive of frames, reels, and character work, filed one project at a time.</p>
+    <div class="hero-meta">
+      <div><strong>01</strong>Illustration</div>
+      <div><strong>02</strong>Motion graphics</div>
+      <div><strong>03</strong>Character design</div>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="num mono">01 / SELECTED</span>
+      <h2>Reel archive</h2>
+      <div class="rule"></div>
+    </div>
+  </div>
+  <div class="grid">
+
+    <a class="reel" href="#" target="_blank">
+      <div class="frame"></div>
+      <div>
+        <div class="tagnum mono">REEL 01</div>
+        <h3>Project title</h3>
+        <p class="desc">One line on what this piece is — client, format, or the idea behind it.</p>
+      </div>
+      <div class="meta mono"><span>MOTION</span><span>2026</span></div>
+    </a>
+
+    <a class="reel" href="#" target="_blank">
+      <div class="frame"></div>
+      <div>
+        <div class="tagnum mono">REEL 02</div>
+        <h3>Project title</h3>
+        <p class="desc">One line on what this piece is — client, format, or the idea behind it.</p>
+      </div>
+      <div class="meta mono"><span>ILLUSTRATION</span><span>2026</span></div>
+    </a>
+
+    <a class="reel" href="#" target="_blank">
+      <div class="frame"></div>
+      <div>
+        <div class="tagnum mono">REEL 03</div>
+        <h3>Project title</h3>
+        <p class="desc">One line on what this piece is — client, format, or the idea behind it.</p>
+      </div>
+      <div class="meta mono"><span>CHARACTER</span><span>2025</span></div>
+    </a>
+
+    <a class="reel" href="#" target="_blank">
+      <div class="frame"></div>
+      <div>
+        <div class="tagnum mono">REEL 04</div>
+        <h3>Project title</h3>
+        <p class="desc">One line on what this piece is — client, format, or the idea behind it.</p>
+      </div>
+      <div class="meta mono"><span>MOTION</span><span>2025</span></div>
+    </a>
+
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="num mono">02 / PROFILE</span>
+      <h2>About</h2>
+      <div class="rule"></div>
+    </div>
+    <div class="about-grid">
+      <div>
+        <p>I work between illustration and motion graphics, currently contributing monthly animation work to a large YouTube channel and running freelance projects under the studio name Motion Under Vault, based in Malang, Indonesia.</p>
+        <p>My foundation is in illustration, with graphic design as a skill I'm actively building — I like work that moves between still frames and animated ones.</p>
+      </div>
+      <div>
+        <div class="tags">
+          <span class="tag on">Illustration</span>
+          <span class="tag on">Motion graphics</span>
+          <span class="tag">Character design</span>
+          <span class="tag">Graphic design</span>
+          <span class="tag">2D animation</span>
+          <span class="tag">Storyboarding</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="wrap">
+    <div class="section-label">
+      <span class="num mono">03 / GET IN TOUCH</span>
+      <h2>Contact</h2>
+      <div class="rule"></div>
+    </div>
+    <div class="contact-inner">
+      <h2>Let's make<br>something.</h2>
+      <div class="contact-links">
+        <a href="mailto:you@example.com">Email ↗</a>
+        <a href="https://instagram.com/zomvvie" target="_blank">Instagram — art ↗</a>
+        <a href="https://instagram.com/muvi.nfl" target="_blank">Instagram — general ↗</a>
+        <a href="#" target="_blank">YouTube ↗</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 Motion Under Vault</span>
+  <span class="mono">MALANG, ID</span>
+</footer>
+
+</body>
+</html>
